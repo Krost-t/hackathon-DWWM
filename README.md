@@ -13,47 +13,55 @@
 ### Installation
 
 1. Cloner le dépôt
+
 ```bash
 git clone https://github.com/your-username/hackathon-DWWM.git
 cd hackathon-DWWM
 ```
 
-2. Installer les dépendances
+2 . Installer les dépendances
+
 ```bash
 composer install
 ```
 
-3. Configurer l'environnement
+3 . Configurer l'environnement
+
 ```bash
 cp .env .env.local
 # Modifier .env.local avec vos identifiants de base de données
 ```
 
-4. Créer la base de données et exécuter les migrations
+4 . Créer la base de données et exécuter les migrations
+
 ```bash
 php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
 ```
 
-5. Démarrer le serveur Symfony
+5 . Démarrer le serveur Symfony
+
 ```bash
 symfony server:start
 ```
 
 ### Workflow de Développement
 
-1. Créer et basculer sur une nouvelle branche de fonctionnalité
+1 . Créer et basculer sur une nouvelle branche de fonctionnalité
+
 ```bash
 git checkout -b feature/your-feature-name
 ```
 
-2. Effectuer vos modifications et les commiter
+2 . Effectuer vos modifications et les commiter
+
 ```bash
 git add .
 git commit -m "feat(scope): your commit message"
 ```
 
-3. Maintenir votre branche à jour avec main
+3 . Maintenir votre branche à jour avec main
+
 ```bash
 git checkout main
 git pull origin main
@@ -99,7 +107,7 @@ git merge main
 
 ## Structure du Projet
 
-```
+```bash
 hackathon-DWWM/
 ├── config/
 ├── public/
@@ -124,4 +132,4 @@ hackathon-DWWM/
 
 ## Licence
 
-Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails. 
+Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
