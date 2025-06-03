@@ -15,7 +15,7 @@ class AdresseCrudController extends AbstractCrudController
         return Adresse::class;
     }
 
-    /*
+
     public function configureFields(string $pageName): iterable
     {
         return [
@@ -24,5 +24,5 @@ class AdresseCrudController extends AbstractCrudController
             TextEditorField::new('description'),
         ];
     }
-    */
+
 }
