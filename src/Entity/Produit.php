@@ -11,45 +11,47 @@ use Doctrine\ORM\Mapping as ORM;
 class Produit
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\Column(length: 100)]
+    private ?string $refProduit = null;
+
     #[ORM\Column]
-    private ?int $id = null;
+    private ?float $prix = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $prix = null;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Type::class, inversedBy: 'produits')]
+    #[ORM\JoinColumn(name: 'idType', referencedColumnName: 'id')]
     private ?Type $type = null;
 
-    /**
-     * @var Collection<int, Categorie>
-     */
-    #[ORM\OneToMany(targetEntity: Categorie::class, mappedBy: 'produit')]
-    private Collection $categorie;
+    #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'produits')]
+    #[ORM\JoinColumn(name: 'idCategorie', referencedColumnName: 'id')]
+    private ?Categorie $categorie = null;
 
-    #[ORM\ManyToOne(inversedBy: 'refProduit')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Adresse $adresse = null;
+    #[ORM\OneToMany(mappedBy: 'refProduit', targetEntity: Commander::class, orphanRemoval: true)]
+    private Collection $commandes;
 
     public function __construct()
     {
-        $this->categorie = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getRefProduit(): ?string
     {
-        return $this->id;
+        return $this->refProduit;
     }
 
-    public function getPrix(): ?string
+    public function setRefProduit(string $refProduit): static
+    {
+        $this->refProduit = $refProduit;
+        return $this;
+    }
+
+    public function getPrix(): ?float
     {
         return $this->prix;
     }
 
-    public function setPrix(string $prix): static
+    public function setPrix(float $prix): static
     {
         $this->prix = $prix;
-
         return $this;
     }
 
@@ -61,48 +63,45 @@ class Produit
     public function setType(?Type $type): static
     {
         $this->type = $type;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Categorie>
-     */
-    public function getCategorie(): Collection
+    public function getCategorie(): ?Categorie
     {
         return $this->categorie;
     }
 
-    public function addCategorie(Categorie $categorie): static
+    public function setCategorie(?Categorie $categorie): static
     {
-        if (!$this->categorie->contains($categorie)) {
-            $this->categorie->add($categorie);
-            $categorie->setProduit($this);
+        $this->categorie = $categorie;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commander>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commander $commande): static
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes[] = $commande;
+            $commande->setRefProduit($this);
         }
 
         return $this;
     }
 
-    public function removeCategorie(Categorie $categorie): static
+    public function removeCommande(Commander $commande): static
     {
-        if ($this->categorie->removeElement($categorie)) {
-            // set the owning side to null (unless already changed)
-            if ($categorie->getProduit() === $this) {
-                $categorie->setProduit(null);
+        if ($this->commandes->removeElement($commande)) {
+            if ($commande->getRefProduit() === $this) {
+                $commande->setRefProduit(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getAdresse(): ?Adresse
-    {
-        return $this->adresse;
-    }
-
-    public function setAdresse(?Adresse $adresse): static
-    {
-        $this->adresse = $adresse;
 
         return $this;
     }
