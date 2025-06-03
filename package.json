@@ -1,0 +1,25 @@
+{
+  "name": "hackathon-dwwm",
+  "version": "1.0.0",
+  "description": "## Pour Commencer",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Krost-t/hackathon-DWWM.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Krost-t/hackathon-DWWM/issues"
+  },
+  "homepage": "https://github.com/Krost-t/hackathon-DWWM#readme",
+  "dependencies": {
+    "bootstrap": "^5.3.6"
+  }
+}
