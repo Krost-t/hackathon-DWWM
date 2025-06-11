@@ -1,0 +1,428 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos produits{% endblock %}
+
+{% block stylesheets %}
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: #d0ea3a;
+            color: #222;
+            margin: 0;
+        }
+        .navbar-zalando {
+            width: 100%;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.2rem 3vw 1.2rem 3vw;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar-zalando .logo {
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: #222;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-zalando nav {
+            display: flex;
+            gap: 2.5rem;
+            margin-left: 3rem;
+        }
+        .navbar-zalando nav a {
+            color: #222;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: color 0.15s;
+            padding: 0.2rem 0.7rem;
+            border-radius: 4px;
+        }
+        .navbar-zalando nav a.active, .navbar-zalando nav a:hover {
+            background: #222;
+            color: #fff;
+        }
+        .search-bar {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .search-bar input {
+            width: 350px;
+            padding: 0.7rem 1rem;
+            border-radius: 24px;
+            border: 1px solid #bbb;
+            font-size: 1rem;
+            background: #f7f7f7;
+            margin-left: 1rem;
+        }
+        .container-produit {
+            display: flex;
+            flex-direction: row;
+            gap: 2rem;
+            margin: 2rem auto;
+            max-width: 1400px;
+        }
+        .sidebar-filtres {
+            min-width: 250px;
+            background: #eaf7a7;
+            border-radius: 12px;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            height: fit-content;
+        }
+        .sidebar-filtres h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        .sidebar-filtres label {
+            display: block;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+        .sidebar-filtres input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+        .produits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2.5rem 1.5rem;
+            justify-items: center;
+        }
+        .produit-card {
+            background: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 0 0 1.2rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: box-shadow 0.2s, transform 0.2s;
+            position: relative;
+            min-width: 240px;
+            max-width: 320px;
+            border: 1px solid #eaeaea;
+        }
+        .produit-card:hover {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+            transform: translateY(-6px) scale(1.03);
+        }
+        .produit-card .img-container {
+            width: 100%;
+            height: 220px;
+            background: #f3f3f3;
+            border-radius: 0.5rem 0.5rem 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .produit-card img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            background: transparent;
+            z-index: 1;
+        }
+        .produit-card .badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #ff0033;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 0.2rem 0.7rem;
+            border-radius: 12px;
+            z-index: 3;
+        }
+        .produit-card .bandeau-nom {
+            margin-top: 0.7rem;
+            font-weight: 700;
+            font-size: 1.08rem;
+            color: #222;
+            text-align: left;
+            padding: 0 1rem 0 1rem;
+            width: 100%;
+            letter-spacing: 0.2px;
+        }
+        .produit-card .marque {
+            font-size: 0.98rem;
+            color: #888;
+            font-weight: 600;
+            margin-top: 1rem;
+            margin-bottom: 0.2rem;
+            padding: 0 1rem 0 1rem;
+        }
+        .produit-card .prix {
+            color: #222;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            margin-top: 0.7rem;
+            padding: 0 1rem 0 1rem;
+        }
+        .produit-card .prix-barre {
+            color: #888;
+            text-decoration: line-through;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+        }
+        .produit-card .categorie, .produit-card .type {
+            font-size: 0.97rem;
+            color: #888;
+            margin-bottom: 0.2rem;
+            padding: 0 1rem 0 1rem;
+        }
+        .produit-card .stars {
+            color: #222;
+            font-size: 1.1rem;
+            margin: 0.2rem 0 0.2rem 1rem;
+        }
+        .produit-card .avis {
+            color: #888;
+            font-size: 0.95rem;
+            margin-left: 0.5rem;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.3rem;
+            margin: 2.5rem 0 1.5rem 0;
+        }
+        .pagination button {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-family: inherit;
+            font-size: 1rem;
+            color: #222;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        .pagination button.active, .pagination button:hover {
+            background: #222;
+            color: #fff;
+        }
+        .pagination button[disabled] {
+            background: #eee;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+        .pagination span {
+            color: #bbb;
+            font-size: 1.1rem;
+            padding: 0 0.3rem;
+        }
+        .footer-zalando {
+            width: 100%;
+            background: #fafafa;
+            border-top: 1px solid #eee;
+            padding: 2rem 0 1rem 0;
+            text-align: center;
+            color: #888;
+            font-size: 1rem;
+            margin-top: 3rem;
+        }
+        .footer-zalando .footer-links {
+            margin-bottom: 1rem;
+        }
+        .footer-zalando .footer-links a {
+            color: #888;
+            margin: 0 1rem;
+            text-decoration: none;
+            font-size: 1.05rem;
+        }
+        .footer-zalando .footer-links a:hover {
+            color: #ff6900;
+        }
+        @media (max-width: 900px) {
+            .container-produit {
+                flex-direction: column;
+            }
+            .sidebar-filtres {
+                margin-bottom: 2rem;
+            }
+            .search-bar input {
+                width: 100%;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="navbar-zalando">
+    <div class="logo">
+        <img src="/images/logo.svg" alt="Logo" style="height:38px;margin-right:10px;vertical-align:middle;">Stylish
+    </div>
+    <nav>
+        <a href="#" class="active">Homme</a>
+        <a href="#">Femme</a>
+        <a href="#">Enfant</a>
+    </nav>
+</div>
+<div class="search-bar">
+    <input type="text" id="search-nom" placeholder="Rechercher un produit...">
+</div>
+<div class="container-produit">
+    <aside class="sidebar-filtres">
+        <h3>Genre</h3>
+        <label><input type="checkbox" name="genre" value="homme"> Hommes</label>
+        <label><input type="checkbox" name="genre" value="femme"> Femmes</label>
+        <label><input type="checkbox" name="genre" value="enfant"> Enfants</label>
+        <h3>Prix</h3>
+        <label><input type="checkbox" name="prix" value="-50"> Moins 50 €</label>
+        <label><input type="checkbox" name="prix" value="50-100"> 50 € - 100 €</label>
+        <label><input type="checkbox" name="prix" value="100-150"> 100 € - 150 €</label>
+        <label><input type="checkbox" name="prix" value="150+"> Plus de 150 €</label>
+        <h3>Type</h3>
+        <label><input type="checkbox" name="type" value="baskets"> Baskets</label>
+        <label><input type="checkbox" name="type" value="chaussures"> Chaussures</label>
+        <label><input type="checkbox" name="type" value="bottes"> Bottes</label>
+        <label><input type="checkbox" name="type" value="sandales"> Sandales</label>
+    </aside>
+    <main style="flex:1;">
+        <div id="produits-grid" class="produits-grid">
+            {# Les produits sont chargés dynamiquement en JS #}
+        </div>
+        <div id="pagination" class="pagination"></div>
+        <div id="loading" style="display:none;text-align:center;margin:2rem;">Chargement...</div>
+    </main>
+</div>
+<div class="footer-zalando">
+    <div class="footer-links">
+        <a href="#">Mentions légales</a>
+        <a href="#">CGV</a>
+        <a href="#">Politique de confidentialité</a>
+        <a href="#">Contact</a>
+    </div>
+    &copy; {{ "now"|date("Y") }} Stylish. Tous droits réservés.
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+let page = 1;
+let total = 0;
+let limit = 20;
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getFilters() {
+    const genres = Array.from(document.querySelectorAll('input[name="genre"]:checked')).map(cb => cb.value);
+    const prix = Array.from(document.querySelectorAll('input[name="prix"]:checked')).map(cb => cb.value);
+    const types = Array.from(document.querySelectorAll('input[name="type"]:checked')).map(cb => cb.value);
+    const nom = document.getElementById('search-nom').value;
+    return { genres, prix, types, nom };
+}
+
+function renderStars(note) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        stars += `<span style="color:${i <= note ? '#222' : '#ccc'};">★</span>`;
+    }
+    return stars;
+}
+
+function renderProduitCard(produit) {
+    // Simule des données d'avis et de promo pour la démo
+    const note = getRandomInt(3, 5);
+    const avis = getRandomInt(5, 200);
+    const promo = Math.random() < 0.18; // 18% des produits en promo
+    const nouveau = Math.random() < 0.12; // 12% des produits "nouveaux"
+    const prixBarre = promo ? (produit.prix * (1 + getRandomInt(10, 25) / 100)).toFixed(2) : '';
+    return `
+        <div class="produit-card">
+            <div class="img-container">
+                <img src="${produit.image || ''}" alt="Product image">
+                ${promo ? '<div class="badge">Promo</div>' : nouveau ? '<div class="badge" style="background:#222;">Nouveau</div>' : ''}
+            </div>
+            <div class="marque">Nike Performance</div>
+            <div class="bandeau-nom">${produit.nomProduit}</div>
+            <div class="prix">${Number(produit.prix).toFixed(2)} €${prixBarre ? `<span class="prix-barre">${prixBarre} €</span>` : ''}</div>
+            <div class="stars">${renderStars(note)}<span class="avis">(${avis})</span></div>
+            <div class="categorie">${produit.categorie || ''}</div>
+            <div class="type">${produit.type || ''}</div>
+        </div>
+    `;
+}
+
+function renderPagination(current, totalPages) {
+    let html = '';
+    if (totalPages <= 1) return '';
+    html += `<button ${current === 1 ? 'disabled' : ''} data-page="${current-1}">Précédent</button>`;
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || Math.abs(i - current) <= 2) {
+            html += `<button class="${i === current ? 'active' : ''}" data-page="${i}">${i}</button>`;
+        } else if (i === current - 3 || i === current + 3) {
+            html += '<span>...</span>';
+        }
+    }
+    html += `<button ${current === totalPages ? 'disabled' : ''} data-page="${current+1}">Suivant</button>`;
+    return html;
+}
+
+function fetchProduits(goToPage = 1) {
+    page = goToPage;
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('produits-grid').innerHTML = '';
+    const { genres, prix, types, nom } = getFilters();
+    const params = new URLSearchParams();
+    genres.forEach(g => params.append('genre[]', g));
+    prix.forEach(p => params.append('prix[]', p));
+    types.forEach(t => params.append('type[]', t));
+    if (nom) params.append('nom', nom);
+    params.append('page', page);
+    fetch('/produit/ajax?' + params.toString())
+        .then(r => r.json())
+        .then(data => {
+            total = data.total;
+            limit = data.limit;
+            if (data.produits.length === 0) {
+                document.getElementById('produits-grid').innerHTML = '<div>Aucun produit trouvé.</div>';
+                document.getElementById('pagination').innerHTML = '';
+            } else {
+                const html = data.produits.map(renderProduitCard).join('');
+                document.getElementById('produits-grid').innerHTML = html;
+                const totalPages = Math.ceil(total / limit);
+                document.getElementById('pagination').innerHTML = renderPagination(page, totalPages);
+            }
+        })
+        .finally(() => {
+            document.getElementById('loading').style.display = 'none';
+        });
+}
+
+document.querySelectorAll('.sidebar-filtres input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => fetchProduits(1));
+});
+document.getElementById('search-nom').addEventListener('input', () => fetchProduits(1));
+
+document.addEventListener('click', function(e) {
+    if (e.target.closest('#pagination button[data-page]')) {
+        const btn = e.target.closest('button[data-page]');
+        const p = parseInt(btn.getAttribute('data-page'));
+        if (!isNaN(p) && p > 0) fetchProduits(p);
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchProduits(1);
+});
+</script>
+{% endblock %} 
