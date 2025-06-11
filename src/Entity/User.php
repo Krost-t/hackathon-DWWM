@@ -49,16 +49,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Commander::class, orphanRemoval: true)]
     private Collection $commandes;
 
-    /**
-     * @var Collection<int, Commander>
-     */
-    #[ORM\OneToMany(targetEntity: Commander::class, mappedBy: 'idClient')]
-    private Collection $commanders;
-
     public function __construct()
     {
         $this->commandes = new ArrayCollection();
-        $this->commanders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -106,7 +99,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function eraseCredentials(): void {}
+    public function eraseCredentials(): void
+    {
+    }
 
     public function isVerified(): bool
     {
@@ -186,36 +181,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->commandes->removeElement($commande)) {
             if ($commande->getUser() === $this) {
                 $commande->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Commander>
-     */
-    public function getCommanders(): Collection
-    {
-        return $this->commanders;
-    }
-
-    public function addCommander(Commander $commander): static
-    {
-        if (!$this->commanders->contains($commander)) {
-            $this->commanders->add($commander);
-            $commander->setIdClient($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCommander(Commander $commander): static
-    {
-        if ($this->commanders->removeElement($commander)) {
-            // set the owning side to null (unless already changed)
-            if ($commander->getIdClient() === $this) {
-                $commander->setIdClient(null);
             }
         }
 

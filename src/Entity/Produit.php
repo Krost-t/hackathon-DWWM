@@ -11,8 +11,18 @@ use Doctrine\ORM\Mapping as ORM;
 class Produit
 {
     #[ORM\Id]
-    #[ORM\Column(length: 100)]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 100, unique: true)]
     private ?string $refProduit = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $nomProduit = null;
+
+    #[ORM\Column(type: "text", nullable: true)]
+    private ?string $description = null;
 
     #[ORM\Column]
     private ?float $prix = null;
@@ -25,12 +35,20 @@ class Produit
     #[ORM\JoinColumn(name: 'idCategorie', referencedColumnName: 'id')]
     private ?Categorie $categorie = null;
 
-    #[ORM\OneToMany(mappedBy: 'refProduit', targetEntity: Commander::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'produit', targetEntity: Commander::class, orphanRemoval: true)]
     private Collection $commandes;
+
+    #[ORM\OneToOne(mappedBy: 'produit', targetEntity: ImageProduit::class, cascade: ['persist', 'remove'])]
+    private ?ImageProduit $image = null;
 
     public function __construct()
     {
         $this->commandes = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getRefProduit(): ?string
@@ -41,6 +59,28 @@ class Produit
     public function setRefProduit(string $refProduit): static
     {
         $this->refProduit = $refProduit;
+        return $this;
+    }
+
+    public function getNomProduit(): ?string
+    {
+        return $this->nomProduit;
+    }
+
+    public function setNomProduit(string $nomProduit): static
+    {
+        $this->nomProduit = $nomProduit;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
         return $this;
     }
 
@@ -89,7 +129,7 @@ class Produit
     {
         if (!$this->commandes->contains($commande)) {
             $this->commandes[] = $commande;
-            $commande->setRefProduit($this);
+            $commande->setProduit($this);
         }
 
         return $this;
@@ -98,11 +138,22 @@ class Produit
     public function removeCommande(Commander $commande): static
     {
         if ($this->commandes->removeElement($commande)) {
-            if ($commande->getRefProduit() === $this) {
-                $commande->setRefProduit(null);
+            if ($commande->getProduit() === $this) {
+                $commande->setProduit(null);
             }
         }
 
+        return $this;
+    }
+
+    public function getImage(): ?ImageProduit
+    {
+        return $this->image;
+    }
+
+    public function setImage(?ImageProduit $image): static
+    {
+        $this->image = $image;
         return $this;
     }
 }
