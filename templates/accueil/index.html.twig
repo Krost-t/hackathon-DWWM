@@ -1,21 +1,398 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% endblock %}
+{% block title %}Accueil - Nike Style{% endblock %}
 
 {% block body %}
+<main class="homepage-main" role="main">
+    <section class="iconic-models-section" aria-labelledby="iconic-models-title">
+        <div class="section-header-carousel">
+            <h1 id="iconic-models-title" class="section-title">Nos modèles iconiques</h1>
+            <div class="carousel-navigation">
+                <button class="carousel-arrow prev-arrow" aria-label="Précédent"><i class="fas fa-chevron-left"></i></button>
+                <button class="carousel-arrow next-arrow" aria-label="Suivant"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+        
+        <div class="products-carousel-container">
+            <div class="products-carousel">
+                {% for product in iconic_products %}
+                    <a href="{{ product.link }}" class="product-card-carousel" tabindex="0">
+                        <div class="product-card-image-wrapper">
+                            {% set image_path = 'images/' ~ product.image %}
+                            {% if asset(image_path) %} {# This checks if the asset path is valid, not if the file exists #}
+                                <img src="{{ asset(image_path) }}" alt="{{ product.name }}" loading="lazy">
+                            {% else %}
+                                <img src="{{ asset('images/default-product.jpg') }}" alt="Default product image" loading="lazy">
+                            {% endif %}
+                        </div>
+                        <h2 class="product-card-title-carousel">{{ product.name }}</h2>
+                    </a>
+                {% else %}
+                    <p>No iconic models available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="discount-section" aria-labelledby="discount-title">
+        <h2 id="discount-title">10% OFF Discount Coupons</h2>
+        <p>Subscribe us to get 10% off on all the purchases</p>
+        <button class="email-me-button">EMAIL ME</button>
+    </section>
+
+    <section class="featured-products-section" aria-labelledby="featured-products-title">
+        <h2 id="featured-products-title" class="section-title">Nouveautés</h2>
+        <div class="products-grid">
+            {% for product in featured_products %}
+                <a href="{{ path('app_produit', {id: product.id}) }}" class="product-card" data-genre="{{ product.genre }}" data-color="{{ product.couleur }}" data-size="{{ product.taille }}" data-cut-type="{{ product.type_coupe }}" data-lifestyle="{{ product.lifestyle }}" tabindex="0">
+                    <div class="product-card-image-wrapper">
+                        <img src="{{ asset('images/' ~ product.image) }}" alt="{{ product.nom }}" loading="lazy">
+                    </div>
+                    <div class="product-card-details">
+                        <h3 class="product-card-title">{{ product.nom }}</h3>
+                        <p class="product-card-price">{{ product.prix|format_currency('EUR', {fraction_digit: 2}) }}</p>
+                        {% if product.promotion %}
+                            <p class="product-card-promotion">Promotion: {{ product.promotion }}</p>
+                        {% endif %}
+                    </div>
+                    <button class="add-to-cart-button">Ajouter au panier</button>
+                </a>
+            {% else %}
+                <p>Aucun produit vedette disponible.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+</main>
+
 <style>
-    .example-wrapper h1{
-        display: flex;
-        justify-content: center;
+/* Styles spécifiques à la page d'accueil (inspirés du carrousel Nike) */
+.homepage-main {
+    padding: var(--spacing-xl) 0;
+}
+
+.iconic-models-section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-xl);
+}
+
+.section-header-carousel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.section-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--nike-black);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.carousel-navigation {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.carousel-arrow {
+    background-color: var(--nike-grey);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.carousel-arrow:hover {
+    background-color: #e0e0e0;
+}
+
+.carousel-arrow i {
+    color: var(--nike-black);
+    font-size: 1.2rem;
+}
+
+.products-carousel-container {
+    overflow-x: auto; /* Active le défilement horizontal pour un effet carrousel */
+    -webkit-overflow-scrolling: touch; /* Défilement fluide sur iOS */
+    padding-bottom: var(--spacing-md); /* Espace pour la barre de défilement */
+}
+
+.products-carousel {
+    display: flex; /* Utilise flexbox pour une disposition horizontale */
+    gap: var(--spacing-md);
+    padding-bottom: var(--spacing-sm); /* Empêche le contenu d'être masqué par la barre de défilement */
+}
+
+.product-card-carousel {
+    flex: 0 0 auto; /* Empêche les cartes de rétrécir */
+    width: 300px; /* Largeur fixe pour chaque carte */
+    background-color: var(--nike-grey);
+    border-radius: var(--nike-border-radius); /* Rayon subtil */
+    padding: var(--spacing-lg);
+    text-align: left;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    color: var(--nike-black);
+}
+
+.product-card-carousel:hover {
+    transform: translateY(-5px); /* Effet de soulèvement */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.product-card-image-wrapper {
+    width: 100%;
+    padding-bottom: 75%; /* Ratio d'aspect 4:3 */
+    position: relative;
+    overflow: hidden;
+    margin-bottom: var(--spacing-md);
+}
+
+.product-card-image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Assure que l'image s'adapte sans recadrage */
+    background-color: var(--nike-grey); /* Fond pour les images */
+}
+
+.product-card-title-carousel {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* New styles for Discount Section */
+.discount-section {
+    max-width: 1200px;
+    margin: var(--spacing-xl) auto;
+    background-color: var(--nike-grey); /* Assuming a light grey background from image */
+    padding: var(--spacing-xl);
+    text-align: center;
+    border-radius: var(--nike-border-radius);
+    position: relative;
+    overflow: hidden; /* To contain the large "10%" text */
+}
+
+.discount-section::before {
+    content: "10%";
+    font-size: 20rem; /* Large text as seen in the image */
+    font-weight: 900;
+    color: rgba(0, 0, 0, 0.05); /* Very light, almost transparent */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    white-space: nowrap;
+}
+
+.discount-section h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--nike-black);
+    margin-bottom: var(--spacing-sm);
+    position: relative; /* Bring content above pseudo-element */
+    z-index: 1;
+}
+
+.discount-section p {
+    font-size: 1.1rem;
+    color: var(--nike-dark-grey);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    z-index: 1;
+}
+
+.email-me-button {
+    background-color: var(--nike-black);
+    color: var(--nike-white);
+    border: none;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: var(--nike-border-radius);
+    transition: background-color 0.2s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.email-me-button:hover {
+    background-color: var(--nike-dark-grey);
+}
+
+/* New styles for Featured Products Grid */
+.featured-products-section {
+    max-width: 1400px;
+    margin: var(--spacing-xl) auto;
+    padding: 0 var(--spacing-xl);
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.product-card {
+    background-color: var(--nike-grey);
+    border-radius: var(--nike-border-radius);
+    padding: var(--spacing-lg);
+    text-align: left;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    color: var(--nike-black);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.product-card-image-wrapper {
+    width: 100%;
+    padding-bottom: 75%; /* 4:3 aspect ratio */
+    position: relative;
+    overflow: hidden;
+    margin-bottom: var(--spacing-md);
+}
+
+.product-card-image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: var(--nike-grey);
+}
+
+.product-card-details {
+    margin-bottom: var(--spacing-md);
+}
+
+.product-card-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin: 0 0 var(--spacing-xs) 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-card-price {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--nike-black);
+    margin: 0;
+}
+
+.product-card-promotion {
+    font-size: 0.9rem;
+    color: var(--nike-red); /* Example promotion color */
+    margin-top: var(--spacing-xs);
+}
+
+.add-to-cart-button {
+    background-color: var(--nike-black);
+    color: var(--nike-white);
+    border: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: var(--nike-border-radius);
+    transition: background-color 0.2s ease;
+    align-self: flex-start; /* Align button to the left */
+}
+
+.add-to-cart-button:hover {
+    background-color: var(--nike-dark-grey);
+}
+
+/* Ajustements responsives pour le carrousel de la page d'accueil */
+@media (max-width: 992px) {
+    .iconic-models-section, .featured-products-section {
+        padding: 0 var(--spacing-md);
     }
+    .section-title {
+        font-size: 2.2rem;
+    }
+    .products-carousel {
+        padding-bottom: var(--spacing-sm); /* Ensure scrollbar doesn't cover content */
+    }
+    .product-card-carousel {
+        width: 280px; /* Cartes légèrement plus petites */
+        padding: var(--spacing-md);
+    }
+    .discount-section {
+        padding: var(--spacing-lg);
+    }
+    .discount-section h2 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .section-header-carousel {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: var(--spacing-md);
+    }
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: var(--spacing-md);
+    }
+    .carousel-navigation {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    .product-card-carousel {
+        width: 250px; /* Ajuster pour les petits écrans */
+    }
+    .discount-section::before {
+        font-size: 15rem;
+    }
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .iconic-models-section, .featured-products-section {
+        padding: 0 var(--spacing-sm);
+    }
+    .section-title {
+        font-size: 1.6rem;
+    }
+    .product-card-carousel {
+        width: 200px; /* Taille de carte la plus petite pour mobile */
+    }
+    .discount-section::before {
+        font-size: 10rem;
+    }
+    .products-grid {
+        grid-template-columns: 1fr; /* Single column on very small screens */
+    }
+}
 </style>
-
-<div class="example-wrapper">
-    <h1>Accueil</h1>
-
-    <ul>
-        <li>Your controller at <code>/Users/romaincarlier/Workspace/hackathon-DWWM/src/Controller/AccueilController.php</code></li>
-        <li>Your template at <code>/Users/romaincarlier/Workspace/hackathon-DWWM/templates/accueil/index.html.twig</code></li>
-    </ul>
-</div>
 {% endblock %}

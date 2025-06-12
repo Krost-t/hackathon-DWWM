@@ -1,469 +1,455 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nos produits{% endblock %}
-
-{% block stylesheets %}
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Montserrat', Arial, sans-serif;
-            background: #d0ea3a;
-            color: #222;
-            margin: 0;
-        }
-        .navbar-zalando {
-            width: 100%;
-            background: #fff;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.2rem 3vw 1.2rem 3vw;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .navbar-zalando .logo {
-            font-family: 'Montserrat', Arial, sans-serif;
-            font-weight: 700;
-            font-size: 2rem;
-            color: #222;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-        }
-        .navbar-zalando nav {
-            display: flex;
-            gap: 2.5rem;
-            margin-left: 3rem;
-        }
-        .navbar-zalando nav a {
-            color: #222;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 1.1rem;
-            transition: color 0.15s;
-            padding: 0.2rem 0.7rem;
-            border-radius: 4px;
-        }
-        .navbar-zalando nav a.active, .navbar-zalando nav a:hover {
-            background: #222;
-            color: #fff;
-        }
-        .search-bar {
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-        }
-        .search-bar input {
-            width: 350px;
-            padding: 0.7rem 1rem;
-            border-radius: 24px;
-            border: 1px solid #bbb;
-            font-size: 1rem;
-            background: #f7f7f7;
-            margin-left: 1rem;
-        }
-        .container-produit {
-            display: flex;
-            flex-direction: row;
-            gap: 2rem;
-            margin: 2rem auto;
-            max-width: 1400px;
-        }
-        .sidebar-filtres {
-            min-width: 250px;
-            background: #eaf7a7;
-            border-radius: 12px;
-            padding: 2rem 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            height: fit-content;
-        }
-        .sidebar-filtres h3 {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-        .sidebar-filtres label {
-            display: block;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-        }
-        .sidebar-filtres input[type="checkbox"] {
-            margin-right: 0.5rem;
-        }
-        .produits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 2.5rem 1.5rem;
-            justify-items: center;
-        }
-        .produit-card {
-            background: #fff;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-            padding: 0 0 1.2rem 0;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            transition: box-shadow 0.2s, transform 0.2s;
-            position: relative;
-            min-width: 240px;
-            max-width: 320px;
-            border: 1px solid #eaeaea;
-        }
-        .produit-card:hover {
-            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
-            transform: translateY(-6px) scale(1.03);
-        }
-        .produit-card .img-container {
-            width: 100%;
-            height: 220px;
-            background: #f3f3f3;
-            border-radius: 0.5rem 0.5rem 0 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .produit-card img {
-            width: 180px;
-            height: 180px;
-            object-fit: contain;
-            background: transparent;
-            z-index: 1;
-        }
-        .produit-card .badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #ff0033;
-            color: #fff;
-            font-size: 0.85rem;
-            font-weight: 700;
-            padding: 0.2rem 0.7rem;
-            border-radius: 12px;
-            z-index: 3;
-        }
-        .produit-card .bandeau-nom {
-            margin-top: 0.7rem;
-            font-weight: 700;
-            font-size: 1.08rem;
-            color: #222;
-            text-align: left;
-            padding: 0 1rem 0 1rem;
-            width: 100%;
-            letter-spacing: 0.2px;
-        }
-        .produit-card .marque {
-            font-size: 0.98rem;
-            color: #888;
-            font-weight: 600;
-            margin-top: 1rem;
-            margin-bottom: 0.2rem;
-            padding: 0 1rem 0 1rem;
-        }
-        .produit-card .prix {
-            color: #222;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.3rem;
-            margin-top: 0.7rem;
-            padding: 0 1rem 0 1rem;
-        }
-        .produit-card .prix-barre {
-            color: #888;
-            text-decoration: line-through;
-            font-size: 1rem;
-            margin-left: 0.5rem;
-        }
-        .produit-card .categorie, .produit-card .type {
-            font-size: 0.97rem;
-            color: #888;
-            margin-bottom: 0.2rem;
-            padding: 0 1rem 0 1rem;
-        }
-        .produit-card .stars {
-            color: #222;
-            font-size: 1.1rem;
-            margin: 0.2rem 0 0.2rem 1rem;
-        }
-        .produit-card .avis {
-            color: #888;
-            font-size: 0.95rem;
-            margin-left: 0.5rem;
-        }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.3rem;
-            margin: 2.5rem 0 1.5rem 0;
-        }
-        .pagination button {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            font-family: inherit;
-            font-size: 1rem;
-            color: #222;
-            cursor: pointer;
-            transition: background 0.15s, color 0.15s;
-        }
-        .pagination button.active, .pagination button:hover {
-            background: #222;
-            color: #fff;
-        }
-        .pagination button[disabled] {
-            background: #eee;
-            color: #aaa;
-            cursor: not-allowed;
-        }
-        .pagination span {
-            color: #bbb;
-            font-size: 1.1rem;
-            padding: 0 0.3rem;
-        }
-        .footer-zalando {
-            width: 100%;
-            background: #fafafa;
-            border-top: 1px solid #eee;
-            padding: 2rem 0 1rem 0;
-            text-align: center;
-            color: #888;
-            font-size: 1rem;
-            margin-top: 3rem;
-        }
-        .footer-zalando .footer-links {
-            margin-bottom: 1rem;
-        }
-        .footer-zalando .footer-links a {
-            color: #888;
-            margin: 0 1rem;
-            text-decoration: none;
-            font-size: 1.05rem;
-        }
-        .footer-zalando .footer-links a:hover {
-            color: #ff6900;
-        }
-        @media (max-width: 900px) {
-            .container-produit {
-                flex-direction: column;
-            }
-            .sidebar-filtres {
-                margin-bottom: 2rem;
-            }
-            .search-bar input {
-                width: 100%;
-            }
-        }
-    </style>
+{% block title %}
+    {% if produit is defined %}
+        {{ produit.nom }} - Nike Style
+    {% else %}
+        Produits - Nike Style
+    {% endif %}
 {% endblock %}
 
 {% block body %}
-<div class="navbar-zalando">
-    <div class="logo">
-        <img src="/images/logo.svg" alt="Logo" style="height:38px;margin-right:10px;vertical-align:middle;">Stylish
-    </div>
-    <nav>
-        <a href="#" class="active">Homme</a>
-        <a href="#">Femme</a>
-        <a href="#">Enfant</a>
-    </nav>
-</div>
-<div class="search-bar">
-    <input type="text" id="search-nom" placeholder="Rechercher un produit...">
-</div>
-<div class="container-produit">
-    <aside class="sidebar-filtres">
-        <h3>Genre</h3>
-        <label><input type="checkbox" name="genre" value="homme"> Hommes</label>
-        <label><input type="checkbox" name="genre" value="femme"> Femmes</label>
-        <label><input type="checkbox" name="genre" value="enfant"> Enfants</label>
-        <h3>Prix</h3>
-        <label><input type="checkbox" name="prix" value="-50"> Moins 50 €</label>
-        <label><input type="checkbox" name="prix" value="50-100"> 50 € - 100 €</label>
-        <label><input type="checkbox" name="prix" value="100-150"> 100 € - 150 €</label>
-        <label><input type="checkbox" name="prix" value="150+"> Plus de 150 €</label>
-        <h3>Type</h3>
-        <label><input type="checkbox" name="type" value="baskets"> Baskets</label>
-        <label><input type="checkbox" name="type" value="chaussures"> Chaussures</label>
-        <label><input type="checkbox" name="type" value="bottes"> Bottes</label>
-        <label><input type="checkbox" name="type" value="sandales"> Sandales</label>
-    </aside>
-    <main style="flex:1;">
-        <div id="produits-grid" class="produits-grid">
-            {# Les produits sont chargés dynamiquement en JS #}
+{% if produit is defined %}
+    {# Affichage du détail d'un produit #}
+    <main class="product-page-detail" role="main">
+        <div class="product-detail-container">
+            <section class="product-gallery-detail" aria-label="Galerie d'images du produit">
+                {% if images is defined and images is not empty %}
+                    <div class="gallery-main-detail">
+                        <img src="{{ asset('images/' ~ produit.image) }}" 
+                             alt="{{ produit.nom }}" 
+                             class="main-image-detail"
+                             loading="eager">
+                        {% if produit.promotion %}
+                            <span class="promotion-badge">{{ produit.promotion }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="gallery-thumbnails-detail">
+                        {% for image in images %}
+                            <button class="thumbnail-btn-detail" 
+                                    aria-label="Voir l'image {{ loop.index }} du produit"
+                                    data-image="{{ asset('images/' ~ image) }}">
+                                <img src="{{ asset('images/' ~ image) }}" 
+                                     alt="Miniature {{ loop.index }}"
+                                     loading="lazy">
+                            </button>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="gallery-main-detail">
+                        <img src="{{ asset('images/' ~ produit.image) }}" 
+                             alt="{{ produit.nom }}"
+                             class="main-image-detail">
+                        {% if produit.promotion %}
+                            <span class="promotion-badge">{{ produit.promotion }}</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </section>
+
+            <section class="product-details-info" aria-label="Informations du produit">
+                <h1 class="product-title-detail">{{ produit.nom }}</h1>
+                
+                <div class="product-price-detail">
+                    <span class="price-value">{{ produit.prix|number_format(2, ',', ' ') }} €</span>
+                </div>
+
+                <div class="product-attributes">
+                    <div class="attribute-group">
+                        <h3>Genre</h3>
+                        <p>{{ produit.genre }}</p>
+                    </div>
+                    <div class="attribute-group">
+                        <h3>Style</h3>
+                        <p>{{ produit.lifestyle }}</p>
+                    </div>
+                    <div class="attribute-group">
+                        <h3>Couleur</h3>
+                        <p>{{ produit.couleur }}</p>
+                    </div>
+                    <div class="attribute-group">
+                        <h3>Type de coupe</h3>
+                        <p>{{ produit.type_coupe }}</p>
+                    </div>
+                </div>
+
+                <div class="product-description-detail">
+                    <h2>Description</h2>
+                    <p>{{ produit.description }}</p>
+                </div>
+
+                <div class="product-actions-detail">
+                    <div class="size-selector">
+                        <h3>Taille</h3>
+                        <div class="size-grid">
+                            {% for size in filters.sizes %}
+                                <label class="size-checkbox">
+                                    <input type="radio" name="size" value="{{ size }}">
+                                    <span class="size-label">{{ size }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <button class="add-to-cart-btn-detail" aria-label="Ajouter au panier">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Ajouter au panier</span>
+                    </button>
+                </div>
+            </section>
         </div>
-        <div id="pagination" class="pagination"></div>
-        <div id="loading" style="display:none;text-align:center;margin:2rem;">Chargement...</div>
     </main>
-</div>
-<div id="images-importees" style="margin:3rem 0 2rem 0;">
-    <h2 style="font-size:1.3rem;margin-bottom:1.5rem;">Images importées</h2>
-    <div style="display:flex;flex-wrap:wrap;gap:2.5rem;">
-        <div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);padding:1.2rem;min-width:220px;max-width:260px;text-align:center;">
-            <img src="/images/57aa34ea7c824bdda23d6df2a63b33aa.webp" alt="Image produit" style="width:180px;height:180px;object-fit:contain;margin-bottom:1rem;">
-            <div style="font-weight:700;">57aa34ea7c824bdda23d6df2a63b33aa.webp</div>
-            <div style="color:#888;font-size:0.97rem;">Taille : 118 Ko</div>
-            <div style="color:#888;font-size:0.97rem;">Image produit importée</div>
-        </div>
-        <div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);padding:1.2rem;min-width:220px;max-width:260px;text-align:center;">
-            <img src="/images/c7ff7fe51fb14ecf9f815a7c65477522.webp" alt="Image produit" style="width:180px;height:180px;object-fit:contain;margin-bottom:1rem;">
-            <div style="font-weight:700;">c7ff7fe51fb14ecf9f815a7c65477522.webp</div>
-            <div style="color:#888;font-size:0.97rem;">Taille : 77 Ko</div>
-            <div style="color:#888;font-size:0.97rem;">Image produit importée</div>
-        </div>
-        <div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);padding:1.2rem;min-width:220px;max-width:260px;text-align:center;">
-            <img src="/images/36d22bd52a6641ac9ec99bf951374155.webp" alt="Image produit" style="width:180px;height:180px;object-fit:contain;margin-bottom:1rem;">
-            <div style="font-weight:700;">36d22bd52a6641ac9ec99bf951374155.webp</div>
-            <div style="color:#888;font-size:0.97rem;">Taille : 114 Ko</div>
-            <div style="color:#888;font-size:0.97rem;">Image produit importée</div>
-        </div>
-        <div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);padding:1.2rem;min-width:220px;max-width:260px;text-align:center;">
-            <img src="/images/6df54d4cce804c4e9fc92aa42d9ea75c.webp" alt="Image produit" style="width:180px;height:180px;object-fit:contain;margin-bottom:1rem;">
-            <div style="font-weight:700;">6df54d4cce804c4e9fc92aa42d9ea75c.webp</div>
-            <div style="color:#888;font-size:0.97rem;">Taille : 81 Ko</div>
-            <div style="color:#888;font-size:0.97rem;">Image produit importée</div>
-        </div>
-        <div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);padding:1.2rem;min-width:220px;max-width:260px;text-align:center;">
-            <img src="/images/f28acf7be39d47a6a4f02fcf8ddb47b2.webp" alt="Image produit" style="width:180px;height:180px;object-fit:contain;margin-bottom:1rem;">
-            <div style="font-weight:700;">f28acf7be39d47a6a4f02fcf8ddb47b2.webp</div>
-            <div style="color:#888;font-size:0.97rem;">Taille : 48 Ko</div>
-            <div style="color:#888;font-size:0.97rem;">Image produit importée</div>
-        </div>
-        <div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);padding:1.2rem;min-width:220px;max-width:260px;text-align:center;">
-            <img src="/images/3493abd51b734820b3e1049ffa5c4a75.webp" alt="Image produit" style="width:180px;height:180px;object-fit:contain;margin-bottom:1rem;">
-            <div style="font-weight:700;">3493abd51b734820b3e1049ffa5c4a75.webp</div>
-            <div style="color:#888;font-size:0.97rem;">Taille : 50 Ko</div>
-            <div style="color:#888;font-size:0.97rem;">Image produit importée</div>
-        </div>
-    </div>
-</div>
-<div class="footer-zalando">
-    <div class="footer-links">
-        <a href="#">Mentions légales</a>
-        <a href="#">CGV</a>
-        <a href="#">Politique de confidentialité</a>
-        <a href="#">Contact</a>
-    </div>
-    &copy; {{ "now"|date("Y") }} Stylish. Tous droits réservés.
-</div>
-{% endblock %}
-
-{% block javascripts %}
-<script>
-let page = 1;
-let total = 0;
-let limit = 20;
-
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function getFilters() {
-    const genres = Array.from(document.querySelectorAll('input[name="genre"]:checked')).map(cb => cb.value);
-    const prix = Array.from(document.querySelectorAll('input[name="prix"]:checked')).map(cb => cb.value);
-    const types = Array.from(document.querySelectorAll('input[name="type"]:checked')).map(cb => cb.value);
-    const nom = document.getElementById('search-nom').value;
-    return { genres, prix, types, nom };
-}
-
-function renderStars(note) {
-    let stars = '';
-    for (let i = 1; i <= 5; i++) {
-        stars += `<span style="color:${i <= note ? '#222' : '#ccc'};">★</span>`;
-    }
-    return stars;
-}
-
-function renderProduitCard(produit) {
-    // Simule des données d'avis et de promo pour la démo
-    const note = getRandomInt(3, 5);
-    const avis = getRandomInt(5, 200);
-    const promo = Math.random() < 0.18; // 18% des produits en promo
-    const nouveau = Math.random() < 0.12; // 12% des produits "nouveaux"
-    const prixBarre = promo ? (produit.prix * (1 + getRandomInt(10, 25) / 100)).toFixed(2) : '';
-    return `
-        <div class="produit-card">
-            <div class="img-container">
-                <img src="${produit.image || ''}" alt="Product image">
-                ${promo ? '<div class="badge">Promo</div>' : nouveau ? '<div class="badge" style="background:#222;">Nouveau</div>' : ''}
+{% else %}
+    {# Affichage de la liste des produits #}
+    <main class="product-listing-main" role="main">
+        <aside class="filter-sidebar" aria-label="Filtres des produits">
+            <div class="filter-header">
+                <h2>Filtres</h2>
+                <button class="clear-filters-btn" aria-label="Effacer tous les filtres">
+                    <i class="fas fa-times"></i>
+                    Effacer
+                </button>
             </div>
-            <div class="marque">Nike Performance</div>
-            <div class="bandeau-nom">${produit.nomProduit}</div>
-            <div class="prix">${Number(produit.prix).toFixed(2)} €${prixBarre ? `<span class="prix-barre">${prixBarre} €</span>` : ''}</div>
-            <div class="stars">${renderStars(note)}<span class="avis">(${avis})</span></div>
-            <div class="categorie">${produit.categorie || ''}</div>
-            <div class="type">${produit.type || ''}</div>
-        </div>
-    `;
-}
 
-function renderPagination(current, totalPages) {
-    let html = '';
-    if (totalPages <= 1) return '';
-    html += `<button ${current === 1 ? 'disabled' : ''} data-page="${current-1}">Précédent</button>`;
-    for (let i = 1; i <= totalPages; i++) {
-        if (i === 1 || i === totalPages || Math.abs(i - current) <= 2) {
-            html += `<button class="${i === current ? 'active' : ''}" data-page="${i}">${i}</button>`;
-        } else if (i === current - 3 || i === current + 3) {
-            html += '<span>...</span>';
-        }
-    }
-    html += `<button ${current === totalPages ? 'disabled' : ''} data-page="${current+1}">Suivant</button>`;
-    return html;
-}
+            <div class="filter-section">
+                <h3 class="filter-title">Lifestyle</h3>
+                <ul class="filter-options">
+                    {% for item in filters.lifestyle %}
+                        <li><a href="#" class="filter-link">{{ item }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
 
-function fetchProduits(goToPage = 1) {
-    page = goToPage;
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('produits-grid').innerHTML = '';
-    const { genres, prix, types, nom } = getFilters();
-    const params = new URLSearchParams();
-    genres.forEach(g => params.append('genre[]', g));
-    prix.forEach(p => params.append('prix[]', p));
-    types.forEach(t => params.append('type[]', t));
-    if (nom) params.append('nom', nom);
-    params.append('page', page);
-    fetch('/produit/ajax?' + params.toString())
-        .then(r => r.json())
-        .then(data => {
-            total = data.total;
-            limit = data.limit;
-            if (data.produits.length === 0) {
-                document.getElementById('produits-grid').innerHTML = '<div>Aucun produit trouvé.</div>';
-                document.getElementById('pagination').innerHTML = '';
-            } else {
-                const html = data.produits.map(renderProduitCard).join('');
-                document.getElementById('produits-grid').innerHTML = html;
-                const totalPages = Math.ceil(total / limit);
-                document.getElementById('pagination').innerHTML = renderPagination(page, totalPages);
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Genre(<span id="genre-filter-count">0</span>)
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content">
+                    {% for item in filters.genre %}
+                        <label class="checkbox-container">
+                            <input type="checkbox" name="genre" value="{{ item }}">
+                            {{ item }}
+                            <span class="checkmark"></span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Rechercher par prix
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content">
+                    {% for item in filters.price_ranges %}
+                        <label class="checkbox-container">
+                            <input type="checkbox" name="price" value="{{ item }}">
+                            {{ item }}
+                            <span class="checkmark"></span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Promotions et offres
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content">
+                    {% for item in filters.promotions_offers %}
+                        <label class="checkbox-container">
+                            <input type="checkbox" name="promotion" value="{{ item }}">
+                            {{ item }}
+                            <span class="checkmark"></span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Taille / Pointure
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content size-grid">
+                    {% for item in filters.sizes %}
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="size" value="{{ item }}">
+                            <span class="size-label">{{ item }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Couleur
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content color-grid">
+                    {% for item in filters.colors %}
+                        <label class="color-checkbox">
+                            <input type="checkbox" name="color" value="{{ item }}">
+                            <span class="color-label" style="background-color: {{ item|lower }}"></span>
+                            <span class="color-name">{{ item }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Type de coupe
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content">
+                    {% for item in filters.cut_type %}
+                        <label class="checkbox-container">
+                            <input type="checkbox" name="cut_type" value="{{ item }}">
+                            {{ item }}
+                            <span class="checkmark"></span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+
+        <section class="product-listing-content" aria-label="Contenu principal des produits">
+            <div class="product-listing-grid">
+                {% for produit_item in produits %}
+                    <a href="{{ path('app_produit', {id: produit_item.id}) }}" class="product-card" data-genre="{{ produit_item.genre }}" data-color="{{ produit_item.couleur }}" data-size="{{ produit_item.taille }}" data-cut-type="{{ produit_item.type_coupe }}" data-lifestyle="{{ produit_item.lifestyle }}" tabindex="0">
+                        <div class="product-card-image-wrapper">
+                            <img src="{{ asset('images/' ~ produit_item.image) }}" alt="{{ produit_item.nom }}" loading="lazy">
+                        </div>
+                        <div class="product-card-details">
+                            <h3 class="product-card-title">{{ produit_item.nom }}</h3>
+                            <p class="product-card-price">{{ produit_item.prix|format_currency('EUR', {fraction_digit: 2}) }}</p>
+                            {% if produit_item.promotion %}
+                                <p class="product-card-promotion">Promotion: {{ produit_item.promotion }}</p>
+                            {% endif %}
+                        </div>
+                        <button class="add-to-cart-button">Ajouter au panier</button>
+                    </a>
+                {% else %}
+                    <p>Aucun produit disponible pour le moment.</p>
+                {% endfor %}
+            </div>
+
+            <div class="pagination-controls">
+                <button id="prev-page-btn" disabled>Précédent</button>
+                <span id="current-page">Page 1</span>
+                <button id="next-page-btn">Suivant</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterToggleButtons = document.querySelectorAll('.expandable-toggle');
+
+            filterToggleButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const content = this.nextElementSibling;
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+                    this.setAttribute('aria-expanded', !isExpanded);
+                    content.setAttribute('aria-hidden', isExpanded);
+
+                    // Rotate arrow icon
+                    const icon = this.querySelector('i');
+                    if (isExpanded) {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    } else {
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    }
+                });
+            });
+
+            // Client-side filtering logic (simplified for demonstration)
+            const filterCheckboxes = document.querySelectorAll('.filter-sidebar input[type="checkbox"]');
+            const productCards = document.querySelectorAll('.product-listing-grid .product-card');
+            const clearFiltersBtn = document.querySelector('.clear-filters-btn');
+            const genreFilterCountSpan = document.getElementById('genre-filter-count');
+
+            function applyFilters() {
+                const activeFilters = {
+                    genre: new Set(),
+                    color: new Set(),
+                    size: new Set(),
+                    cut_type: new Set(),
+                    lifestyle: new Set(),
+                    price: new Set(),
+                    promotion: new Set()
+                };
+
+                filterCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        activeFilters[checkbox.name].add(checkbox.value);
+                    }
+                });
+
+                let genreCount = 0;
+
+                productCards.forEach(card => {
+                    const cardGenre = card.dataset.genre;
+                    const cardColor = card.dataset.color;
+                    const cardSize = card.dataset.size;
+                    const cardCutType = card.dataset.cutType;
+                    const cardLifestyle = card.dataset.lifestyle;
+                    const cardPrice = parseFloat(card.querySelector('.product-card-price').innerText.replace(' €', '').replace(',', '.'));
+                    const cardPromotion = card.dataset.promotion; // Assuming you add this data attribute
+
+                    let showCard = true;
+
+                    if (activeFilters.genre.size > 0 && !activeFilters.genre.has(cardGenre)) {
+                        showCard = false;
+                    }
+                    if (activeFilters.color.size > 0 && !activeFilters.color.has(cardColor)) {
+                        showCard = false;
+                    }
+                    if (activeFilters.size.size > 0 && !activeFilters.size.has(cardSize)) {
+                        showCard = false;
+                    }
+                    if (activeFilters.cut_type.size > 0 && !activeFilters.cut_type.has(cardCutType)) {
+                        showCard = false;
+                    }
+                    if (activeFilters.lifestyle.size > 0 && !activeFilters.lifestyle.has(cardLifestyle)) {
+                        showCard = false;
+                    }
+                    if (activeFilters.promotion.size > 0) {
+                        let promotionMatch = false;
+                        activeFilters.promotion.forEach(filterPromo => {
+                            if (filterPromo === 'Soldes' && cardPromotion !== null) {
+                                promotionMatch = true;
+                            } else if (filterPromo === 'Nouveautés' && card.dataset.newArrival) { // Assuming a data-new-arrival attribute
+                                promotionMatch = true;
+                            } else if (filterPromo === 'Meilleures ventes' && card.dataset.bestSeller) { // Assuming a data-best-seller attribute
+                                promotionMatch = true;
+                            } else if (filterPromo === 'Offres spéciales' && card.dataset.specialOffer) { // Assuming a data-special-offer attribute
+                                promotionMatch = true;
+                            } else if (filterPromo === 'Fin de série' && card.dataset.clearance) { // Assuming a data-clearance attribute
+                                promotionMatch = true;
+                            }
+                        });
+                        if (!promotionMatch) {
+                            showCard = false;
+                        }
+                    }
+
+                    if (activeFilters.price.size > 0) {
+                        let priceMatch = false;
+                        activeFilters.price.forEach(range => {
+                            if (range === '0-50€' && cardPrice < 50) priceMatch = true;
+                            else if (range === '50-100€' && cardPrice >= 50 && cardPrice < 100) priceMatch = true;
+                            else if (range === '100-150€' && cardPrice >= 100 && cardPrice < 150) priceMatch = true;
+                            else if (range === '150-200€' && cardPrice >= 150 && cardPrice < 200) priceMatch = true;
+                            else if (range === '200€+' && cardPrice >= 200) priceMatch = true;
+                        });
+                        if (!priceMatch) {
+                            showCard = false;
+                        }
+                    }
+
+                    if (showCard) {
+                        card.style.display = '';
+                        if (activeFilters.genre.size > 0 && activeFilters.genre.has(cardGenre)) {
+                            genreCount++;
+                        }
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                genreFilterCountSpan.textContent = genreCount;
             }
-        })
-        .finally(() => {
-            document.getElementById('loading').style.display = 'none';
+
+            filterCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', applyFilters);
+            });
+
+            clearFiltersBtn.addEventListener('click', () => {
+                filterCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                applyFilters();
+            });
+
+            // Pagination (simplified)
+            const prevPageBtn = document.getElementById('prev-page-btn');
+            const nextPageBtn = document.getElementById('next-page-btn');
+            const currentPageSpan = document.getElementById('current-page');
+            let currentPage = 1;
+            const productsPerPage = 20; // This should match your backend limit
+
+            function updatePaginationButtons() {
+                // Logic to enable/disable based on total products and current page
+                // For now, simple logic based on fixed number of products
+                const totalProducts = productCards.length;
+                const totalPages = Math.ceil(totalProducts / productsPerPage);
+
+                prevPageBtn.disabled = currentPage === 1;
+                nextPageBtn.disabled = currentPage === totalPages;
+                currentPageSpan.textContent = `Page ${currentPage} of ${totalPages}`;
+            }
+
+            prevPageBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    // Trigger AJAX call or re-render based on new page
+                    currentPageSpan.textContent = `Page ${currentPage}`;
+                    updatePaginationButtons();
+                }
+            });
+
+            nextPageBtn.addEventListener('click', () => {
+                // Simple logic for demonstration; in real app, fetch more products
+                const totalProducts = productCards.length;
+                const totalPages = Math.ceil(totalProducts / productsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    // Trigger AJAX call or re-render based on new page
+                    currentPageSpan.textContent = `Page ${currentPage}`;
+                    updatePaginationButtons();
+                }
+            });
+
+            // Initial call to set up filters and pagination
+            applyFilters();
+            updatePaginationButtons();
+
+            // Handle image thumbnail clicks
+            const mainImageDetail = document.querySelector('.product-page-detail .main-image-detail');
+            const thumbnailButtons = document.querySelectorAll('.product-page-detail .thumbnail-btn-detail');
+
+            thumbnailButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all thumbnails
+                    thumbnailButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to the clicked thumbnail
+                    this.classList.add('active');
+
+                    const newImageSrc = this.dataset.image;
+                    mainImageDetail.src = newImageSrc;
+                });
+            });
+
+            // Set first thumbnail as active on load
+            if (thumbnailButtons.length > 0) {
+                thumbnailButtons[0].classList.add('active');
+            }
+
+            // Promo bar close button
+            const closePromoBtn = document.querySelector('.close-promo-btn');
+            if (closePromoBtn) {
+                closePromoBtn.addEventListener('click', function() {
+                    this.closest('.top-promo-bar').style.display = 'none';
+                });
+            }
         });
-}
-
-document.querySelectorAll('.sidebar-filtres input[type="checkbox"]').forEach(cb => {
-    cb.addEventListener('change', () => fetchProduits(1));
-});
-document.getElementById('search-nom').addEventListener('input', () => fetchProduits(1));
-
-document.addEventListener('click', function(e) {
-    if (e.target.closest('#pagination button[data-page]')) {
-        const btn = e.target.closest('button[data-page]');
-        const p = parseInt(btn.getAttribute('data-page'));
-        if (!isNaN(p) && p > 0) fetchProduits(p);
-    }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    fetchProduits(1);
-});
-</script>
-{% endblock %} 
+    </script>
+{% endif %}
+{% endblock %}
