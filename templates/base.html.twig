@@ -59,8 +59,8 @@
 
         <nav class="main-nav-stylish">
             <ul class="nav-list-stylish">
-                <li><a href="{{ path('app_accueil') }}" class="nav-link-stylish">Accueil</a></li>
-                <li><a href="{{ path('produit_index') }}" class="nav-link-stylish">Nos articles</a></li>
+                <li><a href="/accueil" class="nav-link-stylish">Accueil</a></li>
+                <li><a href="/produits" class="nav-link-stylish">Nos articles</a></li>
                 <li><a href="#" class="nav-link-stylish">Blog</a></li>
                 <li><a href="#" class="nav-link-stylish">Contact</a></li>
                 <li><button class="return-article-btn">Retour d'article</button></li>
@@ -118,15 +118,6 @@
                     <li><a href="#">Shoes</a></li>
                     <li><a href="#">Contact Us</a></li>
                 </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Get In Touch</h3>
-                <address>
-                    Stylish Online Store 123<br>
-                    Main Street, Toulouse - France.<br>
-                    Call us: (+33) 800 456 789-<br>
-                    987
-                </address>
             </div>
         </footer>
 
@@ -348,6 +339,9 @@
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
                 gap: var(--spacing-lg);
+                position: relative;
+                bottom: 0;
+                width: 100%;
             }
 
             .footer-section h3 {
