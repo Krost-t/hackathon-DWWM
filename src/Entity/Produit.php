@@ -15,25 +15,35 @@ class Produit
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $prix = null;
+    #[ORM\Column(length: 100, unique: true)]
+    private ?string $refProduit = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\Column(length: 255)]
+    private ?string $nomProduit = null;
+
+    #[ORM\Column(type: "text", nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column]
+    private ?float $prix = null;
+
+    #[ORM\ManyToOne(targetEntity: Type::class, inversedBy: 'produits')]
+    #[ORM\JoinColumn(name: 'idType', referencedColumnName: 'id')]
     private ?Type $type = null;
 
-    /**
-     * @var Collection<int, Categorie>
-     */
-    #[ORM\OneToMany(targetEntity: Categorie::class, mappedBy: 'produit')]
-    private Collection $categorie;
+    #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'produits')]
+    #[ORM\JoinColumn(name: 'idCategorie', referencedColumnName: 'id')]
+    private ?Categorie $categorie = null;
 
-    #[ORM\ManyToOne(inversedBy: 'refProduit')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Adresse $adresse = null;
+    #[ORM\OneToMany(mappedBy: 'produit', targetEntity: Commander::class, orphanRemoval: true)]
+    private Collection $commandes;
+
+    #[ORM\OneToOne(mappedBy: 'produit', targetEntity: ImageProduit::class, cascade: ['persist', 'remove'])]
+    private ?ImageProduit $image = null;
 
     public function __construct()
     {
-        $this->categorie = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -41,15 +51,47 @@ class Produit
         return $this->id;
     }
 
-    public function getPrix(): ?string
+    public function getRefProduit(): ?string
+    {
+        return $this->refProduit;
+    }
+
+    public function setRefProduit(string $refProduit): static
+    {
+        $this->refProduit = $refProduit;
+        return $this;
+    }
+
+    public function getNomProduit(): ?string
+    {
+        return $this->nomProduit;
+    }
+
+    public function setNomProduit(string $nomProduit): static
+    {
+        $this->nomProduit = $nomProduit;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getPrix(): ?float
     {
         return $this->prix;
     }
 
-    public function setPrix(string $prix): static
+    public function setPrix(float $prix): static
     {
         $this->prix = $prix;
-
         return $this;
     }
 
@@ -61,49 +103,57 @@ class Produit
     public function setType(?Type $type): static
     {
         $this->type = $type;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Categorie>
-     */
-    public function getCategorie(): Collection
+    public function getCategorie(): ?Categorie
     {
         return $this->categorie;
     }
 
-    public function addCategorie(Categorie $categorie): static
+    public function setCategorie(?Categorie $categorie): static
     {
-        if (!$this->categorie->contains($categorie)) {
-            $this->categorie->add($categorie);
-            $categorie->setProduit($this);
+        $this->categorie = $categorie;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commander>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commander $commande): static
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes[] = $commande;
+            $commande->setProduit($this);
         }
 
         return $this;
     }
 
-    public function removeCategorie(Categorie $categorie): static
+    public function removeCommande(Commander $commande): static
     {
-        if ($this->categorie->removeElement($categorie)) {
-            // set the owning side to null (unless already changed)
-            if ($categorie->getProduit() === $this) {
-                $categorie->setProduit(null);
+        if ($this->commandes->removeElement($commande)) {
+            if ($commande->getProduit() === $this) {
+                $commande->setProduit(null);
             }
         }
 
         return $this;
     }
 
-    public function getAdresse(): ?Adresse
+    public function getImage(): ?ImageProduit
     {
-        return $this->adresse;
+        return $this->image;
     }
 
-    public function setAdresse(?Adresse $adresse): static
+    public function setImage(?ImageProduit $image): static
     {
-        $this->adresse = $adresse;
-
+        $this->image = $image;
         return $this;
     }
 }

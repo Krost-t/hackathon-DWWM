@@ -1,0 +1,455 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if produit is defined %}
+        {{ produit.nom }} - Nike Style
+    {% else %}
+        Produits - Nike Style
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+{% if produit is defined %}
+    {# Affichage du détail d'un produit #}
+    <main class="product-page-detail" role="main">
+        <div class="product-detail-container">
+            <section class="product-gallery-detail" aria-label="Galerie d'images du produit">
+                {% if images is defined and images is not empty %}
+                    <div class="gallery-main-detail">
+                        <img src="{{ asset('images/' ~ produit.image) }}" 
+                             alt="{{ produit.nom }}" 
+                             class="main-image-detail"
+                             loading="eager">
+                        {% if produit.promotion %}
+                            <span class="promotion-badge">{{ produit.promotion }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="gallery-thumbnails-detail">
+                        {% for image in images %}
+                            <button class="thumbnail-btn-detail" 
+                                    aria-label="Voir l'image {{ loop.index }} du produit"
+                                    data-image="{{ asset('images/' ~ image) }}">
+                                <img src="{{ asset('images/' ~ image) }}" 
+                                     alt="Miniature {{ loop.index }}"
+                                     loading="lazy">
+                            </button>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="gallery-main-detail">
+                        <img src="{{ asset('images/' ~ produit.image) }}" 
+                             alt="{{ produit.nom }}"
+                             class="main-image-detail">
+                        {% if produit.promotion %}
+                            <span class="promotion-badge">{{ produit.promotion }}</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </section>
+
+            <section class="product-details-info" aria-label="Informations du produit">
+                <h1 class="product-title-detail">{{ produit.nom }}</h1>
+                
+                <div class="product-price-detail">
+                    <span class="price-value">{{ produit.prix|number_format(2, ',', ' ') }} €</span>
+                </div>
+
+                <div class="product-attributes">
+                    <div class="attribute-group">
+                        <h3>Genre</h3>
+                        <p>{{ produit.genre }}</p>
+                    </div>
+                    <div class="attribute-group">
+                        <h3>Style</h3>
+                        <p>{{ produit.lifestyle }}</p>
+                    </div>
+                    <div class="attribute-group">
+                        <h3>Couleur</h3>
+                        <p>{{ produit.couleur }}</p>
+                    </div>
+                    <div class="attribute-group">
+                        <h3>Type de coupe</h3>
+                        <p>{{ produit.type_coupe }}</p>
+                    </div>
+                </div>
+
+                <div class="product-description-detail">
+                    <h2>Description</h2>
+                    <p>{{ produit.description }}</p>
+                </div>
+
+                <div class="product-actions-detail">
+                    <div class="size-selector">
+                        <h3>Taille</h3>
+                        <div class="size-grid">
+                            {% for size in filters.sizes %}
+                                <label class="size-checkbox">
+                                    <input type="radio" name="size" value="{{ size }}">
+                                    <span class="size-label">{{ size }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <button class="add-to-cart-btn-detail" aria-label="Ajouter au panier">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Ajouter au panier</span>
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+{% else %}
+    {# Affichage de la liste des produits #}
+    <main class="product-listing-main" role="main">
+        <aside class="filter-sidebar" aria-label="Filtres des produits">
+            <div class="filter-header">
+                <h2>Filtres</h2>
+                <button class="clear-filters-btn" aria-label="Effacer tous les filtres">
+                    <i class="fas fa-times"></i>
+                    Effacer
+                </button>
+            </div>
+
+            <div class="filter-section">
+                <h3 class="filter-title">Lifestyle</h3>
+                <ul class="filter-options">
+                    {% for item in filters.lifestyle %}
+                        <li><a href="#" class="filter-link">{{ item }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Genre(<span id="genre-filter-count">0</span>)
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content">
+                    {% for item in filters.genre %}
+                        <label class="checkbox-container">
+                            <input type="checkbox" name="genre" value="{{ item }}">
+                            {{ item }}
+                            <span class="checkmark"></span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Rechercher par prix
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content">
+                    {% for item in filters.price_ranges %}
+                        <label class="checkbox-container">
+                            <input type="checkbox" name="price" value="{{ item }}">
+                            {{ item }}
+                            <span class="checkmark"></span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Promotions et offres
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content">
+                    {% for item in filters.promotions_offers %}
+                        <label class="checkbox-container">
+                            <input type="checkbox" name="promotion" value="{{ item }}">
+                            {{ item }}
+                            <span class="checkmark"></span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Taille / Pointure
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content size-grid">
+                    {% for item in filters.sizes %}
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="size" value="{{ item }}">
+                            <span class="size-label">{{ item }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Couleur
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content color-grid">
+                    {% for item in filters.colors %}
+                        <label class="color-checkbox">
+                            <input type="checkbox" name="color" value="{{ item }}">
+                            <span class="color-label" style="background-color: {{ item|lower }}"></span>
+                            <span class="color-name">{{ item }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="filter-section expandable">
+                <h3 class="filter-title expandable-toggle" aria-expanded="true">
+                    Type de coupe
+                    <i class="fas fa-chevron-up"></i>
+                </h3>
+                <div class="filter-options expandable-content">
+                    {% for item in filters.cut_type %}
+                        <label class="checkbox-container">
+                            <input type="checkbox" name="cut_type" value="{{ item }}">
+                            {{ item }}
+                            <span class="checkmark"></span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+
+        <section class="product-listing-content" aria-label="Contenu principal des produits">
+            <div class="product-listing-grid">
+                {% for produit_item in produits %}
+                    <a href="{{ path('app_produit', {id: produit_item.id}) }}" class="product-card" data-genre="{{ produit_item.genre }}" data-color="{{ produit_item.couleur }}" data-size="{{ produit_item.taille }}" data-cut-type="{{ produit_item.type_coupe }}" data-lifestyle="{{ produit_item.lifestyle }}" tabindex="0">
+                        <div class="product-card-image-wrapper">
+                            <img src="{{ asset('images/' ~ produit_item.image) }}" alt="{{ produit_item.nom }}" loading="lazy">
+                        </div>
+                        <div class="product-card-details">
+                            <h3 class="product-card-title">{{ produit_item.nom }}</h3>
+                            <p class="product-card-price">{{ produit_item.prix|format_currency('EUR', {fraction_digit: 2}) }}</p>
+                            {% if produit_item.promotion %}
+                                <p class="product-card-promotion">Promotion: {{ produit_item.promotion }}</p>
+                            {% endif %}
+                        </div>
+                        <button class="add-to-cart-button">Ajouter au panier</button>
+                    </a>
+                {% else %}
+                    <p>Aucun produit disponible pour le moment.</p>
+                {% endfor %}
+            </div>
+
+            <div class="pagination-controls">
+                <button id="prev-page-btn" disabled>Précédent</button>
+                <span id="current-page">Page 1</span>
+                <button id="next-page-btn">Suivant</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterToggleButtons = document.querySelectorAll('.expandable-toggle');
+
+            filterToggleButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const content = this.nextElementSibling;
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+                    this.setAttribute('aria-expanded', !isExpanded);
+                    content.setAttribute('aria-hidden', isExpanded);
+
+                    // Rotate arrow icon
+                    const icon = this.querySelector('i');
+                    if (isExpanded) {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    } else {
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    }
+                });
+            });
+
+            // Client-side filtering logic (simplified for demonstration)
+            const filterCheckboxes = document.querySelectorAll('.filter-sidebar input[type="checkbox"]');
+            const productCards = document.querySelectorAll('.product-listing-grid .product-card');
+            const clearFiltersBtn = document.querySelector('.clear-filters-btn');
+            const genreFilterCountSpan = document.getElementById('genre-filter-count');
+
+            function applyFilters() {
+                const activeFilters = {
+                    genre: new Set(),
+                    color: new Set(),
+                    size: new Set(),
+                    cut_type: new Set(),
+                    lifestyle: new Set(),
+                    price: new Set(),
+                    promotion: new Set()
+                };
+
+                filterCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        activeFilters[checkbox.name].add(checkbox.value);
+                    }
+                });
+
+                let genreCount = 0;
+
+                productCards.forEach(card => {
+                    const cardGenre = card.dataset.genre;
+                    const cardColor = card.dataset.color;
+                    const cardSize = card.dataset.size;
+                    const cardCutType = card.dataset.cutType;
+                    const cardLifestyle = card.dataset.lifestyle;
+                    const cardPrice = parseFloat(card.querySelector('.product-card-price').innerText.replace(' €', '').replace(',', '.'));
+                    const cardPromotion = card.dataset.promotion; // Assuming you add this data attribute
+
+                    let showCard = true;
+
+                    if (activeFilters.genre.size > 0 && !activeFilters.genre.has(cardGenre)) {
+                        showCard = false;
+                    }
+                    if (activeFilters.color.size > 0 && !activeFilters.color.has(cardColor)) {
+                        showCard = false;
+                    }
+                    if (activeFilters.size.size > 0 && !activeFilters.size.has(cardSize)) {
+                        showCard = false;
+                    }
+                    if (activeFilters.cut_type.size > 0 && !activeFilters.cut_type.has(cardCutType)) {
+                        showCard = false;
+                    }
+                    if (activeFilters.lifestyle.size > 0 && !activeFilters.lifestyle.has(cardLifestyle)) {
+                        showCard = false;
+                    }
+                    if (activeFilters.promotion.size > 0) {
+                        let promotionMatch = false;
+                        activeFilters.promotion.forEach(filterPromo => {
+                            if (filterPromo === 'Soldes' && cardPromotion !== null) {
+                                promotionMatch = true;
+                            } else if (filterPromo === 'Nouveautés' && card.dataset.newArrival) { // Assuming a data-new-arrival attribute
+                                promotionMatch = true;
+                            } else if (filterPromo === 'Meilleures ventes' && card.dataset.bestSeller) { // Assuming a data-best-seller attribute
+                                promotionMatch = true;
+                            } else if (filterPromo === 'Offres spéciales' && card.dataset.specialOffer) { // Assuming a data-special-offer attribute
+                                promotionMatch = true;
+                            } else if (filterPromo === 'Fin de série' && card.dataset.clearance) { // Assuming a data-clearance attribute
+                                promotionMatch = true;
+                            }
+                        });
+                        if (!promotionMatch) {
+                            showCard = false;
+                        }
+                    }
+
+                    if (activeFilters.price.size > 0) {
+                        let priceMatch = false;
+                        activeFilters.price.forEach(range => {
+                            if (range === '0-50€' && cardPrice < 50) priceMatch = true;
+                            else if (range === '50-100€' && cardPrice >= 50 && cardPrice < 100) priceMatch = true;
+                            else if (range === '100-150€' && cardPrice >= 100 && cardPrice < 150) priceMatch = true;
+                            else if (range === '150-200€' && cardPrice >= 150 && cardPrice < 200) priceMatch = true;
+                            else if (range === '200€+' && cardPrice >= 200) priceMatch = true;
+                        });
+                        if (!priceMatch) {
+                            showCard = false;
+                        }
+                    }
+
+                    if (showCard) {
+                        card.style.display = '';
+                        if (activeFilters.genre.size > 0 && activeFilters.genre.has(cardGenre)) {
+                            genreCount++;
+                        }
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                genreFilterCountSpan.textContent = genreCount;
+            }
+
+            filterCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', applyFilters);
+            });
+
+            clearFiltersBtn.addEventListener('click', () => {
+                filterCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                applyFilters();
+            });
+
+            // Pagination (simplified)
+            const prevPageBtn = document.getElementById('prev-page-btn');
+            const nextPageBtn = document.getElementById('next-page-btn');
+            const currentPageSpan = document.getElementById('current-page');
+            let currentPage = 1;
+            const productsPerPage = 20; // This should match your backend limit
+
+            function updatePaginationButtons() {
+                // Logic to enable/disable based on total products and current page
+                // For now, simple logic based on fixed number of products
+                const totalProducts = productCards.length;
+                const totalPages = Math.ceil(totalProducts / productsPerPage);
+
+                prevPageBtn.disabled = currentPage === 1;
+                nextPageBtn.disabled = currentPage === totalPages;
+                currentPageSpan.textContent = `Page ${currentPage} of ${totalPages}`;
+            }
+
+            prevPageBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    // Trigger AJAX call or re-render based on new page
+                    currentPageSpan.textContent = `Page ${currentPage}`;
+                    updatePaginationButtons();
+                }
+            });
+
+            nextPageBtn.addEventListener('click', () => {
+                // Simple logic for demonstration; in real app, fetch more products
+                const totalProducts = productCards.length;
+                const totalPages = Math.ceil(totalProducts / productsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    // Trigger AJAX call or re-render based on new page
+                    currentPageSpan.textContent = `Page ${currentPage}`;
+                    updatePaginationButtons();
+                }
+            });
+
+            // Initial call to set up filters and pagination
+            applyFilters();
+            updatePaginationButtons();
+
+            // Handle image thumbnail clicks
+            const mainImageDetail = document.querySelector('.product-page-detail .main-image-detail');
+            const thumbnailButtons = document.querySelectorAll('.product-page-detail .thumbnail-btn-detail');
+
+            thumbnailButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all thumbnails
+                    thumbnailButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to the clicked thumbnail
+                    this.classList.add('active');
+
+                    const newImageSrc = this.dataset.image;
+                    mainImageDetail.src = newImageSrc;
+                });
+            });
+
+            // Set first thumbnail as active on load
+            if (thumbnailButtons.length > 0) {
+                thumbnailButtons[0].classList.add('active');
+            }
+
+            // Promo bar close button
+            const closePromoBtn = document.querySelector('.close-promo-btn');
+            if (closePromoBtn) {
+                closePromoBtn.addEventListener('click', function() {
+                    this.closest('.top-promo-bar').style.display = 'none';
+                });
+            }
+        });
+    </script>
+{% endif %}
+{% endblock %}
